@@ -82,8 +82,8 @@ if generatedata == "all" or generatedata == "customer"
 			:firstName => Faker::Name.first_name,
                 	:lastName => Faker::Name.last_name,
                 	:emailAddress => Faker::Internet.email(:firstname),
-      			:dateAdded => t.utc.to_s,
-      			:dateLastActive => t.utc.to_s, 
+      			:dateAdded => t.utc.iso8601.to_s,
+      			:dateLastActive => t.utc.iso8601.to_s, 
       			:postalCode => Faker::Address.zip_code,
       			:phoneNumber => Faker::PhoneNumber.phone_number, 
       			:ccInfo => creditcarddoc
@@ -132,8 +132,8 @@ if generatedata == "all" or generatedata == "products"
 			:description => data[n]['description'],
 			:color => Faker::Commerce.color,
 			:imageURL => data[n]['imageUrl'],
-			:dateAdded => t.utc.to_s,
-			:dateModified => t.utc.to_s,
+			:dateAdded => t.utc.iso8601.to_s,
+			:dateModified => t.utc.iso8601.to_s,
 			:unitPrice => data[n]['unitPrice'],
 			:categories => pcategories,
 			:reviewList => [],
@@ -167,7 +167,7 @@ if generatedata == "all" or generatedata == "reviews"
                         :productId => "product" + rand(900).to_s,
 			:customerId => "customer" + rand(1000).to_s,
                         :rating => rand(6),
-			:reviewedAt => t.utc.to_s,
+			:reviewedAt => t.utc.iso8601.to_s,
                 }
 
                 connection.set("review#{n}", document)
@@ -217,7 +217,7 @@ if generatedata == "all" or generatedata == "purchases"
 			:type => "purchase",
                         :purchaseId => "purchase#{n}",
                         :customerId => "customer" + rand(1000).to_s,
-                	:purchasedAt => t.utc.to_s,
+                	:purchasedAt => t.utc.iso8601.to_s,
 			:lineItems => arr_products_purchased,
 		}
 
