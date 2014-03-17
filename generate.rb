@@ -4,6 +4,8 @@
 require 'rubygems'
 require 'couchbase'
 require 'json'
+require 'iso8601'
+require 'pp'
 
 # more info about faker: http://faker.rubyforge.org
 require 'faker'
@@ -106,7 +108,7 @@ if generatedata == "all" or generatedata == "products"
 
 	connection = Couchbase.connect(options)
 	
-	json = File.read('../sample-products.json')
+	json = File.read('sample-products.json')
 	data = JSON.parse(json)
 	options[:total_records] = data.length 	
 
@@ -136,7 +138,7 @@ if generatedata == "all" or generatedata == "products"
 			:dateModified => t.utc.iso8601.to_s,
 			:unitPrice => data[n]['unitPrice'],
 			:categories => pcategories,
-			:reviewList => [],
+			:reviewList => []
 		}
 		
 		connection.set("product#{n}", document) 
@@ -160,11 +162,12 @@ if generatedata == "all" or generatedata == "reviews"
         options[:total_records].times do |n|
                 STDERR.printf("Loading reviews ...%10d / %d\r", n + 1, options[:total_records])
                 t = Time.now
+		pId = "product" + rand(900).to_s
 
                 document = {
 			:type => "review",
                         :reviewId => "review#{n}",
-                        :productId => "product" + rand(900).to_s,
+                        :productId => pId,
 			:customerId => "customer" + rand(1000).to_s,
                         :rating => rand(6),
 			:reviewedAt => t.utc.iso8601.to_s,
@@ -178,7 +181,14 @@ if generatedata == "all" or generatedata == "reviews"
 =begin
 	Update the product file to have the review id in the list
 =end	
-
+	
+		fJson = File.open("product/" + pId.to_s + ".json", "r+")
+		fout = fJson.read
+		parsed = JSON.parse(fout.to_json)
+		pp parsed
+		# parsed["reviewList"].push("review#{n}")
+		# fJson.write(parsed.to_json)
+		fJson.close	
 	end
 end
 
