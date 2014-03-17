@@ -6,6 +6,7 @@ require 'couchbase'
 require 'json'
 require 'iso8601'
 require 'pp'
+require 'date'
 
 # more info about faker: http://faker.rubyforge.org
 require 'faker'
@@ -70,8 +71,13 @@ if generatedata == "all" or generatedata == "customer"
 
 	options[:total_records].times do |n|
   		STDERR.printf("Loading customers ...%10d / %d\r", n + 1, options[:total_records])
-		t = Time.now
-  
+		ta = Time.now - (30 * 24 * 60 * 60) * rand(13) 
+		tla = ta + (30 * 24 * 60 * 60) * rand(13)  
+
+		if(tla > Time.now)
+			tla = Time.now
+		end
+
   		creditcarddoc = {
 			:cardType => Faker::Business.credit_card_type,
       			:cardNumber => Faker::Business.credit_card_number,
@@ -84,8 +90,8 @@ if generatedata == "all" or generatedata == "customer"
 			:firstName => Faker::Name.first_name,
                 	:lastName => Faker::Name.last_name,
                 	:emailAddress => Faker::Internet.email(:firstname),
-      			:dateAdded => t.utc.iso8601.to_s,
-      			:dateLastActive => t.utc.iso8601.to_s, 
+      			:dateAdded => ta.utc.iso8601.to_s,
+      			:dateLastActive => tla.utc.iso8601.to_s, 
       			:postalCode => Faker::Address.zip_code,
       			:phoneNumber => Faker::PhoneNumber.phone_number, 
       			:ccInfo => creditcarddoc
@@ -115,8 +121,9 @@ if generatedata == "all" or generatedata == "products"
 	STDERR.printf("\n");
 	options[:total_records].times do |n|
   		STDERR.printf("Loading products ...%10d / %d\r", n + 1, options[:total_records])
-		t = Time.now
-		
+		ta = Time.now - ((30 * 24 * 60 * 60) * rand(13))
+		tm = Time.now		
+
 		pcategories = data[n]['categories']
 =begin		
 		if rand() < 0.5 
@@ -134,8 +141,8 @@ if generatedata == "all" or generatedata == "products"
 			:description => data[n]['description'],
 			:color => Faker::Commerce.color,
 			:imageURL => data[n]['imageUrl'],
-			:dateAdded => t.utc.iso8601.to_s,
-			:dateModified => t.utc.iso8601.to_s,
+			:dateAdded => ta.utc.iso8601.to_s,
+			:dateModified => tm.utc.iso8601.to_s,
 			:unitPrice => data[n]['unitPrice'],
 			:categories => pcategories,
 			:reviewList => []
@@ -161,7 +168,7 @@ if generatedata == "all" or generatedata == "reviews"
         STDERR.printf("\n");
         options[:total_records].times do |n|
                 STDERR.printf("Loading reviews ...%10d / %d\r", n + 1, options[:total_records])
-                t = Time.now
+		t = Time.now - ((30 * 24 * 60 * 60) * rand(13))
 		pId = "product" + rand(900).to_s
 
                 document = {
