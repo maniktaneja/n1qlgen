@@ -184,10 +184,28 @@ if generatedata == "all" or generatedata == "reviews"
 	
 		fJson = File.open("product/" + pId.to_s + ".json", "r+")
 		fout = fJson.read
-		parsed = JSON.parse(fout.to_json)
-		pp parsed
-		# parsed["reviewList"].push("review#{n}")
-		# fJson.write(parsed.to_json)
+		parsed = JSON.parse(fout)
+		fJson.close
+
+		revList = parsed['reviewList']
+		revList.push("review#{n}")
+				
+		document = {
+                        :type => "product",
+                        :productId => parsed['productId'],
+                        :name => parsed['name'],
+                        :description => parsed['description'],
+                        :color => parsed['color'],
+                        :imageURL => parsed['imageURL'],
+                        :dateAdded => parsed['dateAdded'],
+                        :dateModified => parsed['dateModified'],
+                        :unitPrice => parsed['unitPrice'],
+                        :categories => parsed['categories'],
+                        :reviewList => revList
+                }
+
+		fJson = File.open("product/" + pId.to_s + ".json", "w")
+		fJson.write(document.to_json)
 		fJson.close	
 	end
 end
